@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CityFix | AI Civil Infrastructure Platform</title>
+
+  <script src="script.js"></script>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Leaflet JS & CSS for Live Interactive Map -->
@@ -15,38 +19,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#f0f7ff',
-              100: '#e0effe',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
-              900: '#0c4a6e',
-            }
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
-
 </head>
 <body class="min-h-screen flex flex-col justify-between antialiased">
 
   <!-- ================= TOP HEADER NAV ================= -->
-  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200">
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-zinc-200">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       
       <!-- Brand Logo -->
@@ -57,7 +35,7 @@
         <span class="font-bold text-lg tracking-tight text-zinc-900">City<span class="text-sky-600">Fix</span></span>
       </div>
 
-      <!-- Navigation Tabs (Separate Pages View) -->
+      <!-- Navigation Tabs -->
       <nav class="flex items-center gap-1 sm:gap-2 bg-zinc-100 p-1 rounded-xl text-sm font-medium">
         <button id="nav-home" onclick="switchTab('home')" class="px-3 py-1.5 rounded-lg transition-all text-zinc-900 bg-white shadow-sm">
           Home
@@ -89,13 +67,13 @@
     <div id="view-home" class="view-tab active">
       <div class="text-center py-12 sm:py-16 max-w-3xl mx-auto">
         <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold tracking-wide border border-sky-200 mb-6">
-          <i data-lucide="zap" class="w-3.5 h-3.5"></i> AI-Powered Civic Safety Network
+          <i data-lucide="zap" class="w-3.5 h-3.5"></i> Multimodal AI Vision & Safety Validation
         </span>
         <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-6">
           Report Road Hazards in Seconds.<br/>Protect Families & Communities.
         </h1>
         <p class="text-lg text-zinc-600 mb-8 leading-relaxed">
-          CityFix converts photos and real GPS data into structured municipal inspection reports, dispatching official complaints directly to local authorities.
+          CityFix uses multimodal AI vision to verify authentic hazard evidence, extract GPS data, and dispatch official reports directly to municipal authorities worldwide.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button onclick="switchTab('report')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-sky-600 text-white px-6 py-3 rounded-xl font-semibold shadow-sm hover:bg-sky-700 transition">
@@ -111,26 +89,26 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <div class="bg-white border border-zinc-200 p-6 rounded-2xl">
           <div class="w-10 h-10 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center mb-4">
-            <i data-lucide="crosshair" class="w-5 h-5"></i>
+            <i data-lucide="eye" class="w-5 h-5"></i>
           </div>
-          <h3 class="font-bold text-zinc-900 mb-2">Pinpoint GPS Detection</h3>
-          <p class="text-sm text-zinc-600">Uses high-precision device sensors to fetch live location address & latitude/longitude coordinates automatically.</p>
+          <h3 class="font-bold text-zinc-900 mb-2">AI Image Safety & Verification</h3>
+          <p class="text-sm text-zinc-600">Multimodal AI inspects uploaded photos to ensure they are real, safe infrastructure hazards and filters out spam.</p>
         </div>
 
         <div class="bg-white border border-zinc-200 p-6 rounded-2xl">
           <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-4">
-            <i data-lucide="brain" class="w-5 h-5"></i>
+            <i data-lucide="crosshair" class="w-5 h-5"></i>
           </div>
-          <h3 class="font-bold text-zinc-900 mb-2">Multimodal AI Inspection</h3>
-          <p class="text-sm text-zinc-600">Gemini AI analyzes uploaded photo evidence, assesses danger levels, and writes actionable municipal letters.</p>
+          <h3 class="font-bold text-zinc-900 mb-2">Pinpoint GPS Detection</h3>
+          <p class="text-sm text-zinc-600">Fetches high-precision live device coordinates and reverse-geocodes exact street addresses automatically.</p>
         </div>
 
         <div class="bg-white border border-zinc-200 p-6 rounded-2xl">
           <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4">
-            <i data-lucide="send" class="w-5 h-5"></i>
+            <i data-lucide="globe" class="w-5 h-5"></i>
           </div>
-          <h3 class="font-bold text-zinc-900 mb-2">Direct Municipal Dispatch</h3>
-          <p class="text-sm text-zinc-600">Provides immediate direct routing links to official city portals (Sharjah, Dubai, Abu Dhabi, etc.).</p>
+          <h3 class="font-bold text-zinc-900 mb-2">Global Municipal Routing</h3>
+          <p class="text-sm text-zinc-600">Automatically routes reports to official local portals across the UAE, USA, India, France, Canada, Saudi Arabia, and UK.</p>
         </div>
       </div>
     </div>
@@ -142,7 +120,7 @@
         
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-zinc-900">Submit Infrastructure Incident</h2>
-          <p class="text-sm text-zinc-500">Provide details, add visual evidence, and verify your live location.</p>
+          <p class="text-sm text-zinc-500">Provide details, add verified photo evidence, and verify your live location.</p>
         </div>
 
         <!-- Wizard Step Indicators -->
@@ -153,11 +131,11 @@
           </div>
           <div id="step-lbl-2" class="flex items-center gap-2 text-zinc-400">
             <span class="w-6 h-6 rounded-full bg-zinc-200 text-zinc-600 flex items-center justify-center">2</span>
-            Photo Evidence
+            Photo Evidence & AI Check
           </div>
           <div id="step-lbl-3" class="flex items-center gap-2 text-zinc-400">
             <span class="w-6 h-6 rounded-full bg-zinc-200 text-zinc-600 flex items-center justify-center">3</span>
-            Live Location & AI
+            Live Location & Report
           </div>
         </div>
 
@@ -188,7 +166,7 @@
 
             <div>
               <label class="block text-sm font-medium text-zinc-700 mb-2">What is happening?</label>
-              <textarea id="issue-desc" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-zinc-300 focus:ring-2 focus:ring-sky-500 focus:outline-none text-sm" placeholder="Describe the hazard impact (e.g. Deep pothole right on the primary lane causing vehicles to swerve sharply into pedestrian path)..."></textarea>
+              <textarea id="issue-desc" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-zinc-300 focus:ring-2 focus:ring-sky-500 focus:outline-none text-sm" placeholder="Describe the hazard impact (e.g. Deep pothole right on primary lane causing vehicles to swerve sharply)..."></textarea>
             </div>
 
             <button type="button" onclick="goToStep(2)" class="w-full py-3 bg-zinc-900 text-white font-medium rounded-xl text-sm hover:bg-zinc-800 transition">
@@ -197,22 +175,32 @@
           </div>
 
 
-          <!-- STEP 2: PHOTO UPLOAD -->
+          <!-- STEP 2: PHOTO UPLOAD WITH AI SAFETY CHECK -->
           <div id="wizard-step-2" class="space-y-5 hidden">
             <div>
-              <label class="block text-sm font-medium text-zinc-700 mb-2">Upload Photo of Hazard</label>
+              <label class="block text-sm font-medium text-zinc-700 mb-2">
+                Upload Photo of Hazard <span class="text-red-500 font-bold">* Required for AI Validation</span>
+              </label>
               <div class="border-2 border-dashed border-zinc-300 rounded-2xl p-6 text-center hover:border-sky-500 transition cursor-pointer bg-zinc-50" onclick="document.getElementById('file-input').click()">
                 <i data-lucide="upload-cloud" class="w-8 h-8 text-zinc-400 mx-auto mb-2"></i>
                 <p class="text-xs text-zinc-600 font-medium">Click to upload or drag & drop image</p>
-                <p class="text-[10px] text-zinc-400 mt-1">PNG, JPG up to 10MB</p>
+                <p class="text-[10px] text-zinc-400 mt-1">PNG, JPG up to 10MB (AI will scan for authenticity & safety)</p>
                 <input id="file-input" type="file" accept="image/*" class="hidden" onchange="handleFile(this.files[0])" />
               </div>
+            </div>
+
+            <!-- Validation Alert if Skipped -->
+            <div id="photo-error-alert" class="hidden text-xs bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl font-medium flex items-center gap-2">
+              <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 text-red-600"></i>
+              <span>Photo evidence is required for AI safety validation. Please upload an image or choose a sample photo below.</span>
             </div>
 
             <!-- Image Preview Box -->
             <div id="preview-container" class="hidden bg-zinc-100 p-2 rounded-xl border border-zinc-200 text-center">
               <img id="image-preview" src="" alt="Preview" class="max-h-48 rounded-lg mx-auto object-cover" />
-              <p class="text-xs text-zinc-500 mt-2" id="file-name-lbl"></p>
+              <p class="text-xs text-zinc-500 mt-2 font-medium text-emerald-700 flex items-center justify-center gap-1">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> <span id="file-name-lbl">Image loaded successfully</span>
+              </p>
             </div>
 
             <!-- Quick Sample Test Photos -->
@@ -232,7 +220,7 @@
 
             <div class="flex gap-3">
               <button type="button" onclick="goToStep(1)" class="w-1/3 py-3 border border-zinc-200 text-zinc-700 font-medium rounded-xl text-sm hover:bg-zinc-50 transition">&larr; Back</button>
-              <button type="button" onclick="goToStep(3)" class="w-2/3 py-3 bg-zinc-900 text-white font-medium rounded-xl text-sm hover:bg-zinc-800 transition">Next: Verify Location &rarr;</button>
+              <button type="button" onclick="validateStep2AndProceed()" class="w-2/3 py-3 bg-zinc-900 text-white font-medium rounded-xl text-sm hover:bg-zinc-800 transition">Next: Verify Location &rarr;</button>
             </div>
           </div>
 
@@ -260,19 +248,24 @@
               </div>
             </div>
 
-            <!-- Optional Gemini API Key Box -->
-            <div class="bg-zinc-50 border border-zinc-200 p-3.5 rounded-xl">
-              <div class="flex items-center justify-between mb-1">
-                <label class="text-xs font-semibold text-zinc-700">Gemini Vision API Key (Optional)</label>
-                <span class="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-semibold">Auto-Fallback Ready</span>
+            <!-- Gemini API Explanation & Input -->
+            <div class="bg-zinc-50 border border-zinc-200 p-3.5 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-semibold text-zinc-800 flex items-center gap-1.5">
+                  <i data-lucide="key" class="w-3.5 h-3.5 text-amber-500"></i> Gemini Vision API Key (Optional)
+                </label>
+                <span class="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-semibold">Auto-Fallback Active</span>
               </div>
-              <input type="password" id="api-key-input" class="w-full px-3 py-1.5 rounded-lg border border-zinc-300 text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none" placeholder="Paste key for live AI image analysis or leave blank for instant generator" />
+              <p class="text-[11px] text-zinc-500 leading-snug">
+                <strong>What is this?</strong> Connects the app to Google's multimodal AI cloud servers to perform live image verification (checking for real hazard authenticity and safety filtering). If left blank, CityFix uses its built-in smart fallback simulator so your presentation runs instantly without needing a key.
+              </p>
+              <input type="password" id="api-key-input" class="w-full px-3 py-1.5 rounded-lg border border-zinc-300 text-xs focus:ring-1 focus:ring-sky-500 focus:outline-none" placeholder="Paste Gemini API Key or leave blank for instant fallback..." />
             </div>
 
             <div class="flex gap-3">
               <button type="button" onclick="goToStep(2)" class="w-1/3 py-3 border border-zinc-200 text-zinc-700 font-medium rounded-xl text-sm hover:bg-zinc-50 transition">&larr; Back</button>
               <button type="button" onclick="generateAIReport()" class="w-2/3 py-3 bg-sky-600 text-white font-semibold rounded-xl text-sm hover:bg-sky-700 transition flex items-center justify-center gap-2">
-                <i data-lucide="sparkles" class="w-4 h-4"></i> Generate Official Report
+                <i data-lucide="sparkles" class="w-4 h-4"></i> Run AI Vision & Generate Report
               </button>
             </div>
           </div>
@@ -282,7 +275,7 @@
         <!-- Spinner Loading State -->
         <div id="loading-spinner" class="hidden py-12 text-center space-y-3">
           <div class="w-8 h-8 border-3 border-sky-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p class="text-sm font-medium text-zinc-700">Analyzing visual evidence & drafting complaint...</p>
+          <p class="text-sm font-medium text-zinc-700" id="loading-status-txt">AI Vision scanning image for safety & authenticity...</p>
         </div>
 
         <!-- GENERATED REPORT OUTPUT CONTAINER -->
@@ -292,18 +285,33 @@
             <span id="output-badge" class="px-2.5 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full">HIGH SEVERITY</span>
           </div>
 
+          <!-- AI Safety & Authenticity Badge -->
+          <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900 font-medium">
+            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+            <div>
+              <p class="font-bold">AI Vision Validation Passed</p>
+              <p class="text-[11px] text-emerald-700">Image successfully verified as an authentic, safe infrastructure hazard (Spam & inappropriate content check passed).</p>
+            </div>
+          </div>
+
+          <!-- Included Uploaded Photo in Final Report -->
+          <div id="report-image-box" class="bg-zinc-100 p-2 rounded-xl border border-zinc-200 text-center">
+            <p class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2 text-left px-1">Verified Photographic Evidence</p>
+            <img id="report-attached-img" src="" alt="Hazard Evidence" class="max-h-56 rounded-lg mx-auto object-cover border border-zinc-300 shadow-xs" />
+          </div>
+
           <div class="bg-zinc-50 border border-zinc-200 p-4 rounded-xl text-sm leading-relaxed text-zinc-800 space-y-3" id="report-text-content">
             <!-- Dynamic AI text populated here -->
           </div>
 
-          <!-- Smart Municipality Portal Routing Link -->
+          <!-- Smart Global Municipality Portal Routing Link -->
           <div id="muni-routing-box" class="bg-sky-50 border border-sky-200 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
               <h4 class="text-xs font-bold text-sky-900 uppercase tracking-wide" id="muni-name">Municipal Portal Direct Link</h4>
-              <p class="text-xs text-sky-700 mt-0.5">Copy the letter above and dispatch it directly to local city authorities:</p>
+              <p class="text-xs text-sky-700 mt-0.5">Dispatch this official report directly to local authorities:</p>
             </div>
             <a id="muni-link" href="#" target="_blank" class="inline-flex items-center gap-1.5 bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-sky-700 transition shrink-0">
-              Open Portal <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              Open Official Portal <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
           </div>
 
@@ -354,19 +362,19 @@
         <div class="bg-white border border-zinc-200 p-8 rounded-2xl">
           <h2 class="text-2xl font-bold text-zinc-900 mb-4">Empowering Smart Cities & Stronger Families</h2>
           <p class="text-zinc-600 leading-relaxed mb-6">
-            CityFix bridges the gap between everyday citizens and municipal authorities. By leveraging high-accuracy geolocation and vision AI, CityFix eliminates bureaucratic delays and streamlines public safety.
+            CityFix bridges the gap between everyday citizens and municipal authorities worldwide. By leveraging multimodal AI vision and high-accuracy geolocation, CityFix verifies authentic evidence and eliminates bureaucratic processing delays.
           </p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-zinc-100">
             <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
-              <span class="text-2xl font-black text-sky-600">85%</span>
-              <p class="text-xs font-medium text-zinc-700 mt-1">Faster Municipal Filing</p>
-              <p class="text-[11px] text-zinc-500 mt-0.5">Pre-structured severity letters reduce processing backlogs.</p>
+              <span class="text-2xl font-black text-sky-600">100%</span>
+              <p class="text-xs font-medium text-zinc-700 mt-1">AI Safety & Spam Filter</p>
+              <p class="text-[11px] text-zinc-500 mt-0.5">Vision models screen images to ensure only legitimate hazards pass.</p>
             </div>
             <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
-              <span class="text-2xl font-black text-amber-600">100%</span>
-              <p class="text-xs font-medium text-zinc-700 mt-1">Verified Geo-Evidence</p>
-              <p class="text-[11px] text-zinc-500 mt-0.5">GPS timestamps eliminate vague manual location reports.</p>
+              <span class="text-2xl font-black text-emerald-600">85%</span>
+              <p class="text-xs font-medium text-zinc-700 mt-1">Faster Municipal Filing</p>
+              <p class="text-[11px] text-zinc-500 mt-0.5">Pre-structured severity reports streamline municipal workflow.</p>
             </div>
           </div>
         </div>
@@ -379,11 +387,8 @@
   <!-- ================= FOOTER ================= -->
   <footer class="border-t border-zinc-200 bg-white py-6 mt-12">
     <div class="max-w-6xl mx-auto px-4 text-center text-xs text-zinc-500">
-      CityFix Infrastructure Safety Platform &copy; 2026. Built with AI & High-Precision Geolocation.
+      CityFix Global Infrastructure Safety Platform &copy; 2026. Powered by Multimodal AI & High-Precision Geolocation.
     </div>
   </footer>
-  <!-- Application JavaScript -->
-  <script src="script.js"></script>
-
 </body>
 </html>

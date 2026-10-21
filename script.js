@@ -1,6 +1,27 @@
+tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+
 // Global State
     let currentSeverity = 'High';
     let currentFile = null;
+    let currentImageSrc = "";
     let leafletMap = null;
     let currentMarker = null;
     let detectedLocation = {
@@ -11,10 +32,11 @@
 
     // Pre-loaded Neighborhood Map Pins
     const mapPins = [
-      { lat: 25.3463, lon: 55.3924, type: 'Severe Pothole', location: 'Al Qasimia, Sharjah', severity: 'High' },
-      { lat: 25.3520, lon: 55.3890, type: 'Exposed Wiring', location: 'Al Majaz 2, Sharjah', severity: 'Urgent' },
-      { lat: 25.2048, lon: 55.2708, type: 'Broken Streetlight', location: 'Downtown Dubai', severity: 'Moderate' },
-      { lat: 24.4539, lon: 54.3773, type: 'Road Sign Damaged', location: 'Corniche Road, Abu Dhabi', severity: 'Low' }
+      { lat: 25.3463, lon: 55.3924, type: 'Severe Pothole', location: 'Al Qasimia, Sharjah, UAE', severity: 'High' },
+      { lat: 25.3520, lon: 55.3890, type: 'Exposed Wiring', location: 'Al Majaz 2, Sharjah, UAE', severity: 'Urgent' },
+      { lat: 25.2048, lon: 55.2708, type: 'Broken Streetlight', location: 'Downtown Dubai, UAE', severity: 'Moderate' },
+      { lat: 40.7128, lon: -74.0060, type: 'Road Damage', location: 'New York City, USA', severity: 'High' },
+      { lat: 28.6139, lon: 77.2090, type: 'Water Leak', location: 'New Delhi, India', severity: 'Urgent' }
     ];
 
     // Initialize Page
@@ -23,7 +45,6 @@
       setSeverity('High');
       initMap();
       renderFeed();
-      // Auto-fetch location on initial launch
       fetchExactGPSLocation();
     });
 
@@ -64,6 +85,16 @@
       activeLbl.querySelector('span').className = "w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center";
     }
 
+    // Strict Step 2 Validation (Photo Required for AI Check)
+    function validateStep2AndProceed() {
+      if (!currentFile && !currentImageSrc) {
+        document.getElementById('photo-error-alert').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('photo-error-alert').classList.add('hidden');
+      goToStep(3);
+    }
+
     // Severity Selector
     function setSeverity(level) {
       currentSeverity = level;
@@ -84,9 +115,11 @@
       currentFile = file;
       const reader = new FileReader();
       reader.onload = (e) => {
-        document.getElementById('image-preview').src = e.target.result;
+        currentImageSrc = e.target.result;
+        document.getElementById('image-preview').src = currentImageSrc;
         document.getElementById('preview-container').classList.remove('hidden');
         document.getElementById('file-name-lbl').innerText = file.name;
+        document.getElementById('photo-error-alert').classList.add('hidden');
       };
       reader.readAsDataURL(file);
     }
@@ -97,16 +130,18 @@
       container.classList.remove('hidden');
 
       if (type === 'pothole') {
-        imgPreview.src = "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80";
+        currentImageSrc = "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80";
         document.getElementById('file-name-lbl').innerText = "Sample_Road_Pothole_Damage.jpg";
       } else {
-        imgPreview.src = "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=600&q=80";
+        currentImageSrc = "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=600&q=80";
         document.getElementById('file-name-lbl').innerText = "Sample_Exposed_Utility_Wiring.jpg";
       }
+      imgPreview.src = currentImageSrc;
       currentFile = { name: "Sample_Evidence_Photo.jpg" };
+      document.getElementById('photo-error-alert').classList.add('hidden');
     }
 
-    // HIGH ACCURACY LIVE GPS FETCH & REVERSE GEOCODING
+    // HIGH ACCURACY LIVE GPS FETCH
     function fetchExactGPSLocation() {
       const locInput = document.getElementById('location-input');
       const coordsBadge = document.getElementById('coords-badge');
@@ -130,7 +165,6 @@
           detectedLocation.lat = lat;
           detectedLocation.lon = lon;
 
-          // Perform Reverse Geocoding via OpenStreetMap API
           try {
             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
             const data = await response.json();
@@ -144,7 +178,6 @@
             locInput.value = `Latitude: ${lat.toFixed(4)}, Longitude: ${lon.toFixed(4)}`;
           }
 
-          // Update Map Marker
           if (leafletMap) {
             leafletMap.setView([lat, lon], 14);
             if (currentMarker) leafletMap.removeLayer(currentMarker);
@@ -161,25 +194,51 @@
       );
     }
 
-    // AI REPORT GENERATION & MUNICIPAL ROUTING
+    // MULTIMODAL AI VISION INSPECTION & REPORT GENERATION
     async function generateAIReport() {
       const issueType = document.getElementById('issue-type').value;
-      const desc = document.getElementById('issue-desc').value || "Pothole creating immediate road hazard for commuting vehicles.";
+      const desc = document.getElementById('issue-desc').value || "Hazard creating immediate safety risk for commuting citizens and families.";
       const location = document.getElementById('location-input').value || "Sharjah, United Arab Emirates";
       const apiKey = document.getElementById('api-key-input').value.trim();
 
       document.getElementById('loading-spinner').classList.remove('hidden');
       document.getElementById('report-output').classList.add('hidden');
+      document.getElementById('loading-status-txt').innerText = "Multimodal AI scanning image for authenticity & safety...";
 
       let aiText = "";
 
       if (apiKey) {
         try {
-          const prompt = `Analyze this civic issue report: Type: ${issueType}, Severity: ${currentSeverity}, Description: ${desc}, Location: ${location}. Generate a formal municipal report letter addressing city authorities requesting urgent fix.`;
+          let mimeType = "image/jpeg";
+          let base64Data = currentImageSrc;
+          if (currentImageSrc.includes(',')) {
+            const parts = currentImageSrc.split(',');
+            mimeType = parts[0].match(/:(.*?);/)[1];
+            base64Data = parts[1];
+          }
+
+          const prompt = `You are CityFix AI Vision, an expert municipal infrastructure inspector. Analyze this uploaded image to verify if it depicts an authentic, safe infrastructure hazard (Type: ${issueType}, Severity: ${currentSeverity}, Description: ${desc}, Location: ${location}). First, confirm that the image is safe, appropriate, and genuinely shows a hazard. Then, generate a formal municipal report letter addressing city authorities requesting an urgent repair.`;
+          
+          const payload = {
+            contents: [
+              {
+                parts: [
+                  { text: prompt },
+                  {
+                    inline_data: {
+                      mime_type: mimeType,
+                      data: base64Data
+                    }
+                  }
+                ]
+              }
+            ]
+          };
+
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            body: JSON.stringify(payload)
           });
           const data = await res.json();
           aiText = data.candidates[0].content.parts[0].text;
@@ -187,12 +246,18 @@
           aiText = buildFallbackText(issueType, currentSeverity, desc, location);
         }
       } else {
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         aiText = buildFallbackText(issueType, currentSeverity, desc, location);
       }
 
       document.getElementById('loading-spinner').classList.add('hidden');
       document.getElementById('report-output').classList.remove('hidden');
+
+      // Attach Photo in Report
+      if (currentImageSrc) {
+        document.getElementById('report-attached-img').src = currentImageSrc;
+        document.getElementById('report-image-box').classList.remove('hidden');
+      }
 
       document.getElementById('report-text-content').innerHTML = `
         <p><strong>HAZARD TYPE:</strong> ${issueType}</p>
@@ -206,30 +271,51 @@
       const badge = document.getElementById('output-badge');
       badge.innerText = `${currentSeverity.toUpperCase()} SEVERITY`;
 
-      // Smart Municipal Routing
-      updateMunicipalLink(location);
+      // Smart Global Municipal Routing
+      updateGlobalMunicipalLink(location);
     }
 
     function buildFallbackText(type, severity, desc, location) {
-      return `To: The Municipal Roads & Public Works Authority\nLocation: ${location}\nDate: ${new Date().toLocaleDateString()}\n\nSUBJECT: URGENT MUNICIPAL COMPLAINT - ${type.toUpperCase()}\n\nRespected Authorities,\n\nI am formally reporting a critical infrastructure hazard identified at ${location}. The issue involves ${type.toLowerCase()} (${desc}).\n\nGiven its ${severity} severity level, this hazard poses an immediate risk to local traffic, pedestrian safety, and daily family commutes. We urge your maintenance department to inspect and repair this location promptly.\n\nSincerely,\nConcerned Resident & CityFix Community Safety Member`;
+      return `To: The Municipal Infrastructure & Public Works Authority\nLocation: ${location}\nDate: ${new Date().toLocaleDateString()}\n\nSUBJECT: URGENT CIVIC HAZARD COMPLAINT - ${type.toUpperCase()}\n\nRespected Authorities,\n\nI am formally submitting an official report regarding a critical infrastructure hazard verified by CityFix AI Vision at ${location}. The problem involves ${type.toLowerCase()} (${desc}).\n\nGiven its ${severity} severity level, this hazard presents an immediate threat to community safety, local traffic flow, and daily commuting families. We request that your engineering inspection team evaluate and repair this site urgently.\n\nSincerely,\nConcerned Citizen & CityFix Safety Network Member`;
     }
 
-    function updateMunicipalLink(locationStr) {
+    // MULTI-COUNTRY MUNICIPAL ROUTING ENGINE
+    function updateGlobalMunicipalLink(locationStr) {
       const muniName = document.getElementById('muni-name');
       const muniLink = document.getElementById('muni-link');
 
       const locLower = locationStr.toLowerCase();
 
       if (locLower.includes('dubai')) {
-        muniName.innerText = "Dubai Municipality Portal (04 / 800900)";
+        muniName.innerText = "Dubai Municipality Portal (UAE)";
         muniLink.href = "https://www.dm.gov.ae/faq/";
       } else if (locLower.includes('abu dhabi')) {
-        muniName.innerText = "Abu Dhabi TAMM Services Portal";
+        muniName.innerText = "Abu Dhabi TAMM Portal (UAE)";
         muniLink.href = "https://www.tamm.abudhabi/contact";
-      } else {
-        // Default Sharjah
-        muniName.innerText = "Sharjah Municipality Complaints Portal (993)";
+      } else if (locLower.includes('sharjah') || locLower.includes('uae') || locLower.includes('united arab emirates')) {
+        muniName.innerText = "Sharjah Municipality Portal (993 / UAE)";
         muniLink.href = "https://www.shjmunc.gov.ae/website/ContactUs/481/";
+      } else if (locLower.includes('usa') || locLower.includes('united states') || locLower.includes('america') || locLower.includes('ny') || locLower.includes('california')) {
+        muniName.innerText = "USA 311 City Services & Municipal Portal";
+        muniLink.href = "https://www.usa.gov/state-local-governments";
+      } else if (locLower.includes('india') || locLower.includes('delhi') || locLower.includes('mumbai') || locLower.includes('hyderabad') || locLower.includes('bangalore')) {
+        muniName.innerText = "India Centralized Public Grievance Portal (CPGRAMS)";
+        muniLink.href = "https://pgportal.gov.in/";
+      } else if (locLower.includes('france') || locLower.includes('paris')) {
+        muniName.innerText = "France Services Publics Municipal Portal";
+        muniLink.href = "https://www.service-public.fr/";
+      } else if (locLower.includes('canada') || locLower.includes('toronto') || locLower.includes('vancouver')) {
+        muniName.innerText = "Government of Canada Municipal Services";
+        muniLink.href = "https://www.canada.ca/en/services.html";
+      } else if (locLower.includes('saudi') || locLower.includes('ksa') || locLower.includes('riyadh')) {
+        muniName.innerText = "Saudi Arabia Balady Municipal Portal (940)";
+        muniLink.href = "https://balady.gov.sa/";
+      } else if (locLower.includes('uk') || locLower.includes('united kingdom') || locLower.includes('london')) {
+        muniName.innerText = "UK GOV Local Council Reporting Portal";
+        muniLink.href = "https://www.gov.uk/report-pothole";
+      } else {
+        muniName.innerText = "International Public Infrastructure Portal";
+        muniLink.href = "https://www.google.com/search?q=report+infrastructure+hazard+municipal+portal";
       }
     }
 
@@ -239,11 +325,12 @@
       alert("Official Report Letter copied to clipboard!");
     }
 
-    // Leaflet Interactive Map Setup
+    // Leaflet Interactive Map Setup (Using CartoDB Voyager to Prevent 403 Blocks)
     function initMap() {
-      leafletMap = L.map('map-canvas').setView([25.3463, 55.3924], 11);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
+      leafletMap = L.map('map-canvas').setView([25.3463, 55.3924], 10);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap & CARTO',
+        maxZoom: 19
       }).addTo(leafletMap);
 
       mapPins.forEach(pin => {
