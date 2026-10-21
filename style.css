@@ -1,0 +1,22 @@
+body {
+      font-family: 'Inter', sans-serif;
+      background-color: #fafafa;
+      color: #18181b;
+    }
+    .view-tab {
+      display: none;
+    }
+    .view-tab.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #map-canvas {
+      height: 380px;
+      width: 100%;
+      border-radius: 0.75rem;
+      z-index: 1;
+    }
